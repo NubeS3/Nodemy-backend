@@ -18,6 +18,7 @@ app.get("/", (_, res) => {
 });
 
 const userRoute = require("./routes/user.route");
+const adminRoute = require("./routes/admin.route");
 const categoryRoute = require("./routes/category.route");
 const courseRoute = require('./routes/course.route');
 const lectureRoute = require('./routes/lecture.route');
@@ -25,6 +26,7 @@ const sectionRoute = require('./routes/section.route');
 const ratingRoute = require('./routes/rating.route');
 
 app.use(userRoute);
+app.use(adminRoute);
 app.use(categoryRoute);
 app.use(courseRoute);
 app.use(lectureRoute);
