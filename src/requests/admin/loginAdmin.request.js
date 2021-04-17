@@ -9,10 +9,10 @@ const loginAdminRequest = ({ body }) => {
   }
 
   const {  username, password, ...rest } = body;
-  // if (Object.keys(rest).length !== 0) {
-  //   console.log('zzzz')
-  //   throw new NodemyResponseError(401, 'Unable to login!');
-  // }
+  if (Object.keys(rest).length !== 0) {
+    console.log('zzzz')
+    throw new NodemyResponseError(401, 'Unable to login!');
+  }
 
 
   if (typeof username !== 'string') {
