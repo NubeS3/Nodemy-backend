@@ -1,9 +1,8 @@
 const express = require("express");
 
-const generateAdminJwt =  require("../utils/adminJwt");
+const generateAdminJwt = require("../utils/adminJwt");
 
 const requestValidation = require("../middlewares/requestValidation.middleware");
-const loginNodemyRequest = require("../requests/user/loginNodemy.request");
 const loginAdminRequest = require("../requests/admin/loginAdmin.request");
 
 const adminRoute = express.Router();
@@ -11,13 +10,12 @@ const adminRoute = express.Router();
 // Login with Nodemy account
 adminRoute.post(
   "/admin/login",
- requestValidation(loginAdminRequest),
+  requestValidation(loginAdminRequest),
   async (req, res) => {
     try {
-      //const user = await User.findByCredentials(req.body.email.toLowerCase(), req.body.password);
-      const username = req.body.username;
-      const password = req.body.password;
-     
+      // const user = await User.findByCredentials(req.body.email.toLowerCase(), req.body.password);
+      const {username, password} = req.body;
+
       if (
         username === process.env.ADMIN_USERNAME &&
         password === process.env.ADMIN_PASSWORD
@@ -29,7 +27,7 @@ adminRoute.post(
         });
       }
 
-     
+
     } catch (error) {
       res.status(401).send({
         error: "Unable to login!",
