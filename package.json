@@ -4,7 +4,7 @@
   "description": "Backend for Nodemy web app",
   "main": "src/app.js",
   "scripts": {
-    "start": "npm i; node .",
+    "start": "npm install && env-cmd -f .env node src/app.js",
     "dev": "env-cmd -f .env nodemon app.js"
   },
   "keywords": [
@@ -19,6 +19,7 @@
     "bcrypt": "^5.0.0",
     "env-cmd": "^10.1.0",
     "express": "^4.17.1",
+    "js-sha512": "^0.8.0",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.6.3",
     "mongoose": "^5.11.8",
