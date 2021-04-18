@@ -14,10 +14,10 @@ adminRoute.post(
   async (req, res) => {
     try {
       // const user = await User.findByCredentials(req.body.email.toLowerCase(), req.body.password);
-      const {username, password} = req.body;
+      const {adminUsername, password} = req.body;
 
       if (
-        username === process.env.ADMIN_USERNAME &&
+        adminUsername === process.env.ADMIN_USERNAME &&
         password === process.env.ADMIN_PASSWORD
       ) {
 

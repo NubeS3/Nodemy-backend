@@ -4,7 +4,7 @@
   "description": "Backend for Nodemy web app",
   "main": "src/app.js",
   "scripts": {
-    "start": "npm install && env-cmd -f .env node src/app.js",
+    "start": "env-cmd -f .env node src/app.js",
     "dev": "env-cmd -f .env nodemon app.js"
   },
   "keywords": [
