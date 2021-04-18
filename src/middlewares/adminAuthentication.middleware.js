@@ -1,7 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-
-const authentication = async (req, res, next) => {
+const adminAuthentication = async (req, res, next) => {
   try {
     let token = req.header("Nodemy-Authentication");
     if (!token || typeof token !== "string") {
@@ -11,20 +10,24 @@ const authentication = async (req, res, next) => {
     token = token.replace("Bearer ", "");
 
     const decode = jwt.verify(token, process.env.JWT_SECRET);
-    // const user = await User.findById(decode._id);
-    if (decode.isAdmin === true) {
+    if (decode.user.accountType === 'Admin') {
       req.isAdmin = true;
     }
     else {
-        throw new Error();
+      res.status(403).send({
+        error: "Please authenticate!",
+      });
+      return
     }
 
-    // if (!user) {
-    //   throw new Error();
-    // }
-
     req.accessToken = token;
-    req.user = user;
+    req.user = {
+      email: "admin@nodemy.com",
+      fullname: "admin",
+      accountHost: "Nodemy",
+      password: "!!@!!",
+      accountType: "Admin",
+    };
     next();
   } catch {
     res.status(403).send({
@@ -33,4 +36,4 @@ const authentication = async (req, res, next) => {
   }
 };
 
-module.exports = authentication;
+module.exports = adminAuthentication;
