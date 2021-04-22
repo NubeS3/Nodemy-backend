@@ -5,7 +5,8 @@ const createSignedUrl = (isUpload, path) => {
   const pub = process.env.CLOUD_PUB;
   const pri = process.env.CLOUD_PRI;
   const exp = parseInt((new Date().getTime() / 1000).toFixed(0)) + (15 * 60 + 15); // 15 minutes 15 seconds from now
-  const sign = sha512(pri + exp.toString())
+  const method = isUpload ? "POST" : "GET";
+  const sign = sha512(pri + method + url + path + exp.toString())
 
   if (!path) {
     path = ''

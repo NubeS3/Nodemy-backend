@@ -113,6 +113,7 @@ lectureRoute.post('/lectures/staging', authentication, rolesValidation(['Admin',
     const uploadUrl = createSignedUrl(true)
 
     res.status(201).send({
+      id: lecture._id,
       lecture,
       uploadUrl
     });
