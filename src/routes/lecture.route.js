@@ -124,7 +124,7 @@ lectureRoute.post('/lectures/staging', authentication, rolesValidation(['Admin',
   }
 })
 
-lectureRoute.patch('lectures/ready/:id', authentication, rolesValidation(['Admin', 'Teacher']), async (req, res) => {
+lectureRoute.patch('/lectures/ready/:id', authentication, rolesValidation(['Admin', 'Teacher']), async (req, res) => {
   try {
     const lecture = await CourseLecture.findById(req.params.id);
     if (!lecture) {
@@ -143,7 +143,7 @@ lectureRoute.patch('lectures/ready/:id', authentication, rolesValidation(['Admin
     lecture.isReady = true;
     lecture.save();
 
-    res.send({
+    res.status(200).send({
       lecture,
     });
   } catch (error) {
@@ -257,7 +257,7 @@ lectureRoute.get('/lectures/:id/video', async (req, res) => {
     let user;
     let hasBought = -1;
     if (!lecture.canPreview) {
-      let {token} = req.query;
+      let token = req.header("Nodemy-Authentication");
       if (!token || typeof token !== "string") {
         return res.status(403).send({
           error: "Please authenticate!",
@@ -334,7 +334,7 @@ lectureRoute.get('/lectures/:id/video', async (req, res) => {
       //   fs.createReadStream(videoPath).pipe(res);
       // }
 
-      const url = createSignedUrl(false, `${lecture._id.toString()}.mp4`)
+      const url = createSignedUrl(false, `/${lecture._id.toString()}`)
       res.status(200).send({
         url,
       })

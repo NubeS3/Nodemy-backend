@@ -119,18 +119,21 @@ const courseSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-courseSchema.index({ title: 'text' });
+courseSchema.index({title: 'text'});
 
 courseSchema.methods.toJSON = function () {
   const course = this;
   const courseObj = course.toObject();
 
-  delete courseObj.coverImage;
+  // delete courseObj.coverImage;
   delete courseObj.ratings;
   delete courseObj.__v;
   delete courseObj.sections;
 
-  courseObj.coverImage = `${process.env.HOST}/courses/${course._id.toString()}/cover-image`;
+  const base64data = courseObj.coverImage ? courseObj.coverImage.toString('base64') : null;
+
+  // courseObj.coverImage = `${process.env.HOST}/courses/${course._id.toString()}/cover-image`;
+  courseObj.coverImage = base64data ? `data:image/png;base64,${base64data}` : null;
 
   return courseObj;
 };
@@ -140,8 +143,7 @@ courseSchema.methods.packCourseContent = async function (user) {
   try {
     const foundCategoryName = (await Category.findById(course.category)).name;
     course.categoryName = foundCategoryName;
-  }
-  catch {
+  } catch {
     course.categoryName = '';
   }
 
@@ -224,7 +226,7 @@ courseSchema.statics.getListCourses = async (
 
   if (typeof categoryName === 'string' && categoryName.trim().length > 0) {
     try {
-      const categories = await Category.find({ name: { $regex: new RegExp(`${categoryName}`, 'i') } });
+      const categories = await Category.find({name: {$regex: new RegExp(`${categoryName}`, 'i')}});
       const ids = [];
       categories.forEach((category) => {
         ids.push(`(${category._id.toString()})`);
@@ -232,8 +234,7 @@ courseSchema.statics.getListCourses = async (
       query.category = {
         $regex: new RegExp(`${ids.join('|')}`, 'i'),
       };
-    }
-    catch (error) {
+    } catch (error) {
       const log = new Log({
         location: 'course.model.js',
         message: error.message,
@@ -248,9 +249,9 @@ courseSchema.statics.getListCourses = async (
   let courses = [];
   if (!sort) {
     courses = await Course.find(query)
-    .select(selectedFields)
-    .skip(skip)
-    .limit(coursesPerPage);
+      .select(selectedFields)
+      .skip(skip)
+      .limit(coursesPerPage);
   }
   else {
     const sortQuery = {};
@@ -261,10 +262,10 @@ courseSchema.statics.getListCourses = async (
       sortQuery.sale = 'asc';
     }
     courses = await Course.find(query)
-    .select(selectedFields)
-    .sort(sortQuery)
-    .skip(skip)
-    .limit(coursesPerPage);
+      .select(selectedFields)
+      .sort(sortQuery)
+      .skip(skip)
+      .limit(coursesPerPage);
   }
 
   for (let i = 0; i < courses.length; ++i) {
@@ -288,8 +289,8 @@ courseSchema.statics.increaseTotalViewed = async (courseId = '') => {
     ++course.totalViewed;
     await course.save();
     return course;
+  } catch { /** ignored */
   }
-  catch { /** ignored */ }
 };
 
 const Course = mongoose.model("Course", courseSchema);

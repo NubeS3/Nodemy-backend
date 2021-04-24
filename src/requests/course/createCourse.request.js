@@ -1,6 +1,6 @@
-const { isURL } = require('validator');
-
-const NodemyResponseError = require("../../utils/NodemyResponseError");
+// const { isURL } = require('validator');
+//
+// const NodemyResponseError = require("../../utils/NodemyResponseError");
 const { objectConstraints, stringConstraints, numberConstraints, isObjectId, checkType } = require('../../utils/validator');
 
 const createCourseRequest = ({ body }) => {
@@ -24,13 +24,13 @@ const createCourseRequest = ({ body }) => {
 
   stringConstraints(coverImage, "Course's cover image", { minLength: 24, isRequired: true });
 
-  if (!isURL(coverImage)) {
-    throw new NodemyResponseError(400, "Cover image must be URL!");
-  }
+  // if (!isURL(coverImage)) {
+  //   throw new NodemyResponseError(400, "Cover image must be URL!");
+  // }
 
-  if (!coverImage.includes('https://i.imgur.com/')) {
-    throw new NodemyResponseError(400, "Format of cover image is invalid!");
-  }
+  // if (!coverImage.includes('https://i.imgur.com/')) {
+  //   throw new NodemyResponseError(400, "Format of cover image is invalid!");
+  // }
 
   numberConstraints(price, "Course's price", { min: 0 });
 

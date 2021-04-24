@@ -24,8 +24,12 @@ const courseRoute = express.Router();
 
 courseRoute.post('/courses', authentication, rolesValidation(['Teacher', 'Admin']), requestValidation(createCourseRequest), async (req, res) => {
   try {
-    let coverImage = await downloader(req.body.coverImage);
-    coverImage = await sharp(coverImage).resize({
+    let {coverImage} = req.body;
+    // let coverImage = await downloader(req.body.coverImage);
+    const uri = coverImage.split(';base64,').pop()
+    const imgBuffer = Buffer.from(uri, 'base64');
+
+    coverImage = await sharp(imgBuffer).resize({
       height: 270,
       width: 480,
     }).png().toBuffer();
@@ -51,8 +55,7 @@ courseRoute.post('/courses', authentication, rolesValidation(['Teacher', 'Admin'
     res.status(201).send({
       course: await course.packCourseContent(req.user),
     });
-  }
-  catch (error) {
+  } catch (error) {
     res.status(400).send({
       error: error.message,
     });
@@ -69,11 +72,10 @@ courseRoute.get('/courses', bypassAuthentication, requestValidation(getListCours
       req.query.sort,
       req.user,
       '',
-      { isSuspended: false }
+      {isSuspended: false}
     );
     res.send(listCourses);
-  }
-  catch (error) {
+  } catch (error) {
     console.log(error.message)
     res.status(500).send({
       error: 'Internal Server Error',
@@ -84,8 +86,8 @@ courseRoute.get('/courses', bypassAuthentication, requestValidation(getListCours
 courseRoute.get('/courses/me', authentication, rolesValidation(['Teacher', 'Admin']), async (req, res) => {
   try {
     const courses = await Course
-    .find({ tutor: req.user._id.toString() })
-    .select('_id title summary tutor price sale category totalRatings createdAt averageRatings updatedAt');
+      .find({tutor: req.user._id.toString()})
+      .select('_id coverImage title summary tutor price sale category totalRatings createdAt averageRatings updatedAt');
 
     for (let i = 0; i < courses.length; ++i) {
       courses[i] = await courses[i].packCourseContent(req.user);
@@ -93,8 +95,7 @@ courseRoute.get('/courses/me', authentication, rolesValidation(['Teacher', 'Admi
     res.send({
       courses,
     });
-  }
-  catch {
+  } catch {
     res.status(500).send({
       error: 'Internal Server Error',
     });
@@ -104,16 +105,15 @@ courseRoute.get('/courses/me', authentication, rolesValidation(['Teacher', 'Admi
 courseRoute.get('/courses/admin', authentication, rolesValidation(['Admin']), async (req, res) => {
   try {
     const courses = await Course
-    .find()
-    .select('_id title summary tutor price sale category totalRatings createdAt averageRatings updatedAt isSuspended');
+      .find()
+      .select('_id title summary tutor price sale category totalRatings createdAt averageRatings updatedAt isSuspended');
     for (let i = 0; i < courses.length; ++i) {
       courses[i] = await courses[i].packCourseContent(req.user);
     }
     res.send({
       courses,
     });
-  }
-  catch (error) {
+  } catch (error) {
     console.log(error.message)
     res.status(500).send({
       error: 'Internal Server Error',
@@ -137,8 +137,7 @@ courseRoute.get('/courses/me/:id', authentication, rolesValidation(['Teacher', '
     res.send({
       course,
     });
-  }
-  catch {
+  } catch {
     res.status(500).send({
       error: 'Internal Server Error',
     });
@@ -161,8 +160,7 @@ courseRoute.get('/courses/admin/:id', authentication, rolesValidation(['Admin'])
     res.send({
       course,
     });
-  }
-  catch {
+  } catch {
     res.status(500).send({
       error: 'Internal Server Error',
     });
@@ -172,10 +170,10 @@ courseRoute.get('/courses/admin/:id', authentication, rolesValidation(['Admin'])
 courseRoute.get('/courses/top-viewed', bypassAuthentication, async (req, res) => {
   try {
     const courses = await Course
-    .find({ isSuspended: false })
-    .select('_id title summary tutor price sale category totalRatings createdAt averageRatings updatedAt')
-    .sort({ totalViewed: 'desc' })
-    .limit(10);
+      .find({isSuspended: false})
+      .select('_id title summary tutor price sale category totalRatings createdAt averageRatings updatedAt')
+      .sort({totalViewed: 'desc'})
+      .limit(10);
 
     for (let i = 0; i < courses.length; ++i) {
       courses[i] = await courses[i].packCourseContent(req.user);
@@ -184,8 +182,7 @@ courseRoute.get('/courses/top-viewed', bypassAuthentication, async (req, res) =>
     res.send({
       courses
     });
-  }
-  catch {
+  } catch {
     res.status(500).send({
       error: 'Internal Server Error',
     });
@@ -195,10 +192,10 @@ courseRoute.get('/courses/top-viewed', bypassAuthentication, async (req, res) =>
 courseRoute.get('/courses/new', bypassAuthentication, async (req, res) => {
   try {
     let courses = await Course
-    .find({ isPublic: true, isSuspended: false })
-    .select('_id title summary tutor price sale category totalRatings createdAt averageRatings updatedAt')
-    .sort({ createdAt: 'desc' })
-    .limit(10);
+      .find({isPublic: true, isSuspended: false})
+      .select('_id title summary tutor price sale category totalRatings createdAt averageRatings updatedAt')
+      .sort({createdAt: 'desc'})
+      .limit(10);
 
     for (let i = 0; i < courses.length; ++i) {
       courses[i] = await courses[i].packCourseContent(req.user);
@@ -209,8 +206,7 @@ courseRoute.get('/courses/new', bypassAuthentication, async (req, res) => {
     res.send({
       courses,
     });
-  }
-  catch (error) {
+  } catch (error) {
     res.status(500).send({
       error: 'Internal Server Error',
     });
@@ -220,10 +216,10 @@ courseRoute.get('/courses/new', bypassAuthentication, async (req, res) => {
 courseRoute.get('/courses/hot', bypassAuthentication, async (req, res) => {
   try {
     let courses = await Course
-    .find({ isSuspended: false })
-    .sort({ sale: 'desc' })
-    .select('_id title summary tutor price sale category totalRatings createdAt averageRatings updatedAt')
-    .limit(5);
+      .find({isSuspended: false})
+      .sort({sale: 'desc'})
+      .select('_id title summary tutor price sale category totalRatings createdAt averageRatings updatedAt')
+      .limit(5);
 
     for (let i = 0; i < courses.length; ++i) {
       courses[i] = await courses[i].packCourseContent(req.user);
@@ -233,8 +229,7 @@ courseRoute.get('/courses/hot', bypassAuthentication, async (req, res) => {
     res.send({
       courses,
     });
-  }
-  catch (error) {
+  } catch (error) {
     res.status(500).send({
       error: 'Internal Server Error',
     });
@@ -274,8 +269,7 @@ courseRoute.get('/courses/:id', bypassAuthentication, requestValidation(getCours
     res.send({
       course,
     });
-  }
-  catch (error) {
+  } catch (error) {
     console.log(error.message);
     res.status(500).send({
       error: 'Internal Server Error',
@@ -292,10 +286,9 @@ courseRoute.get('/courses/:id/cover-image', requestValidation(getCourseRequest),
       });
     }
 
-    res.set({ 'Content-Type': 'image/png' });
+    res.set({'Content-Type': 'image/png'});
     res.end(course.coverImage, 'binary');
-  }
-  catch {
+  } catch {
     res.status(500).send({
       error: 'Internal Server Error',
     });
@@ -351,8 +344,7 @@ courseRoute.patch('/courses/:id', authentication, rolesValidation(['Teacher', 'A
     res.send({
       course,
     });
-  }
-  catch (error) {
+  } catch (error) {
     res.status(400).send({
       error: error.message,
     });
@@ -373,8 +365,7 @@ courseRoute.delete('/courses/admin/:id', authentication, rolesValidation(['Admin
     res.send({
       course,
     });
-  }
-  catch (error) {
+  } catch (error) {
     res.status(400).send({
       error: error.message,
     });
@@ -398,28 +389,28 @@ courseRoute.delete('/courses/:id', authentication, rolesValidation(['Teacher', '
       });
     }
 
-    const lectures = await CourseLecture.find({ courseId: course._id.toString() });
+    const lectures = await CourseLecture.find({courseId: course._id.toString()});
     for (let i = 0; i < lectures.length; ++i) {
       try {
         await lectures[i].delete();
+      } catch { /** ignored */
       }
-      catch { /** ignored */ }
     }
 
-    const sections = await CourseSection.find({ courseId: course._id.toString() });
+    const sections = await CourseSection.find({courseId: course._id.toString()});
     for (let i = 0; i < sections.length; ++i) {
       try {
         await sections[i].delete();
+      } catch { /** ignored */
       }
-      catch { /** ignored */ }
     }
 
-    const ratings = await Rating.find({ courseId: course._id.toString() });
+    const ratings = await Rating.find({courseId: course._id.toString()});
     for (let i = 0; i < ratings.length; ++i) {
       try {
         await ratings[i].delete();
+      } catch { /** ignored */
       }
-      catch { /** ignored */ }
     }
 
     await course.delete();
@@ -433,8 +424,7 @@ courseRoute.delete('/courses/:id', authentication, rolesValidation(['Teacher', '
     res.send({
       course: cloneCourse,
     });
-  }
-  catch (error) {
+  } catch (error) {
     res.status(400).send({
       error: error.message,
     });
@@ -480,8 +470,7 @@ courseRoute.patch('/courses/:id/buy', authentication, requestValidation(buyCours
     res.send({
       message: 'You have purchased this course successfully!',
     });
-  }
-  catch (error) {
+  } catch (error) {
     res.status(500).send({
       error: error.message,
     });
@@ -500,9 +489,9 @@ courseRoute.get('/courses/:id/same-category', bypassAuthentication, requestValid
     const courses = await Course.find({
       category: course.category,
     })
-    .select('_id title summary tutor price sale category totalRatings createdAt averageRatings updatedAt')
-    .sort({ totalRegistered: 'desc' })
-    .limit(5);
+      .select('_id title summary tutor price sale category totalRatings createdAt averageRatings updatedAt')
+      .sort({totalRegistered: 'desc'})
+      .limit(5);
 
     for (let i = 0; i < courses.length; ++i) {
       courses[i] = await courses[i].packCourseContent(req.user);
@@ -511,8 +500,7 @@ courseRoute.get('/courses/:id/same-category', bypassAuthentication, requestValid
     res.send({
       courses,
     });
-  }
-  catch (error) {
+  } catch (error) {
     res.status(500).send({
       error: 'Internal Server Error',
     });

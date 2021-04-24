@@ -6,13 +6,16 @@ const createSignedUrl = (isUpload, path) => {
   const pri = process.env.CLOUD_PRI;
   const exp = parseInt((new Date().getTime() / 1000).toFixed(0)) + (15 * 60 + 15); // 15 minutes 15 seconds from now
   const method = isUpload ? "POST" : "GET";
-  const sign = sha512(pri + method + url + path + exp.toString())
 
   if (!path) {
     path = ''
   }
 
-  return `${url}/signed/files/${isUpload ? 'upload' : 'download'}${path}?ALG=SHA512&PUB=${pub}&SIG=${sign}&EXP=${exp}`;
+  const hPath = isUpload ? '/signed/files/upload' : `/signed/files/download/${process.env.CLOUD_BUCKET}${path}`
+
+  const sign = sha512(pri + method + url + hPath + exp.toString())
+
+  return `${url}/signed/files/${isUpload ? 'upload' : 'download'}/${process.env.CLOUD_BUCKET}${path}?ALG=SHA512&PUB=${pub}&SIG=${sign}&EXP=${exp}`;
 }
 
 module.exports = createSignedUrl;
