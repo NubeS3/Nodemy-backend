@@ -15,7 +15,7 @@ const createSignedUrl = (isUpload, path) => {
 
   const sign = sha512(pri + method + url + hPath + exp.toString())
 
-  return `${url}/signed/files/${isUpload ? 'upload' : 'download'}/${process.env.CLOUD_BUCKET}${path}?ALG=SHA512&PUB=${pub}&SIG=${sign}&EXP=${exp}`;
+  return `${url}/signed/files/${isUpload ? 'upload' : `download/${process.env.CLOUD_BUCKET}`}${path}?ALG=SHA512&PUB=${pub}&SIG=${sign}&EXP=${exp}`;
 }
 
 module.exports = createSignedUrl;
