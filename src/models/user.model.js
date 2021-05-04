@@ -99,7 +99,7 @@ userSchema.methods.toJSON = function () {
   const userObject = user.toObject();
 
   delete userObject.activateToken;
-  delete userObject.avatar;
+  // delete userObject.avatar;
   delete userObject.password;
   delete userObject.resetPasswordToken;
   delete userObject.cart;
@@ -109,7 +109,7 @@ userSchema.methods.toJSON = function () {
   delete userObject.updatedAt;
   delete userObject.__v;
 
-  userObject.avatar = `${process.env.HOST}/users/${user._id.toString()}/avatar?t=${new Date().getTime()}`;
+  // userObject.avatar = `${process.env.HOST}/users/${user._id.toString()}/avatar?t=${new Date().getTime()}`;
 
   return userObject;
 };

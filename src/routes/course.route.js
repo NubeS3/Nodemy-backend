@@ -171,7 +171,7 @@ courseRoute.get('/courses/top-viewed', bypassAuthentication, async (req, res) =>
   try {
     const courses = await Course
       .find({isSuspended: false})
-      .select('_id title summary tutor price sale category totalRatings createdAt averageRatings updatedAt')
+      .select('_id title summary coverImage tutor price sale category totalRatings createdAt averageRatings updatedAt')
       .sort({totalViewed: 'desc'})
       .limit(10);
 
@@ -193,7 +193,7 @@ courseRoute.get('/courses/new', bypassAuthentication, async (req, res) => {
   try {
     let courses = await Course
       .find({isPublic: true, isSuspended: false})
-      .select('_id title summary tutor price sale category totalRatings createdAt averageRatings updatedAt')
+      .select('_id title summary coverImage tutor price sale category totalRatings createdAt averageRatings updatedAt')
       .sort({createdAt: 'desc'})
       .limit(10);
 
@@ -218,7 +218,7 @@ courseRoute.get('/courses/hot', bypassAuthentication, async (req, res) => {
     let courses = await Course
       .find({isSuspended: false})
       .sort({sale: 'desc'})
-      .select('_id title summary tutor price sale category totalRatings createdAt averageRatings updatedAt')
+      .select('_id title summary coverImage tutor price sale category totalRatings createdAt averageRatings updatedAt')
       .limit(5);
 
     for (let i = 0; i < courses.length; ++i) {
