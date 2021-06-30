@@ -110,7 +110,7 @@ lectureRoute.post('/lectures/staging', authentication, rolesValidation(['Admin',
     //   fs.writeFileSync(`/home/videos/${lecture._id.toString()}.mp4`, req.files.video[0].buffer);
     // }
 
-    const uploadUrl = createSignedUrl(true)
+    const uploadUrl = await createSignedUrl(true)
 
     res.status(201).send({
       id: lecture._id,
@@ -334,9 +334,9 @@ lectureRoute.get('/lectures/:id/video', async (req, res) => {
       //   fs.createReadStream(videoPath).pipe(res);
       // }
 
-      const url = createSignedUrl(false, `/${lecture._id.toString()}`)
+      const urlOb = await createSignedUrl(false, `${lecture._id.toString()}`)
       res.status(200).send({
-        url,
+        url: urlOb.resUrl,
       })
     }
     else {

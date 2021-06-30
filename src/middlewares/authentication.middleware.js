@@ -12,6 +12,12 @@ const authentication = async (req, res, next) => {
     token = token.replace("Bearer ", "");
 
     const decode = jwt.verify(token, process.env.JWT_SECRET);
+    if (!decode._id && decode.user.accountType === "Admin") {
+      req.accessToken = token;
+      req.user = decode.user;
+      next();
+      return
+    }
     const user = await User.findById(decode._id);
 
     if (!user) {
@@ -22,7 +28,7 @@ const authentication = async (req, res, next) => {
     req.user = user;
     next();
   }
-  catch {
+  catch (err) {
     res.status(403).send({
       error: "Please authenticate!",
     });
