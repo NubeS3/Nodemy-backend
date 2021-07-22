@@ -54,12 +54,12 @@ if (process.env.PHASE === 'DEVELOPMENT') {
 
   app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
-  });  
+  });
 }
 else {
-  const privateKey = fs.readFileSync('/etc/letsencrypt/live/ourdemy.xyz/privkey.pem', 'utf8');
-  const certificate = fs.readFileSync('/etc/letsencrypt/live/ourdemy.xyz/cert.pem', 'utf8');
-  const ca = fs.readFileSync('/etc/letsencrypt/live/ourdemy.xyz/chain.pem', 'utf8');
+  const privateKey = fs.readFileSync(`/etc/letsencrypt/live/${process.env.HOST}/privkey.pem`, 'utf8');
+  const certificate = fs.readFileSync(`/etc/letsencrypt/live/${process.env.HOST}/cert.pem`, 'utf8');
+  const ca = fs.readFileSync(`/etc/letsencrypt/live/${process.env.HOST}/chain.pem`, 'utf8');
 
   const credentials = {
     key: privateKey,
